@@ -1,21 +1,18 @@
-FROM alpine:3.18.3
+# Use the official ZeroTier Docker image
+FROM zyclonite/zerotier
 
-# Setup ZeroTier
-WORKDIR /zerotier.d
-
-COPY start.sh /zerotier.d/start.sh
-
-ENV ZEROTIER_NETWORK_ID "<your_network_id>"
-ENV ZEROTIER_HOSTNAME "railway-app"
-ENV ZEROTIER_ADDITIONAL_ARGS ""
-
-RUN apk update && \
-    apk add --no-cache iptables ip6tables ca-certificates curl && \
-    curl -s https://install.zerotier.com | sh && \
-    rm -rf /var/cache/apk/*
-
+# Create necessary directories
 RUN mkdir -p /var/run/zerotier /var/lib/zerotier
 
-RUN chmod +x ./start.sh
+# Set permissions
+RUN chmod +x /var/lib/zerotier
 
-CMD ["./start.sh"]
+# Add your start script
+COPY start.sh /zerotier.d/start.sh
+RUN chmod +x /zerotier.d/start.sh
+
+# Expose necessary ports (if required by your network setup)
+EXPOSE 9993/udp
+
+# Start ZeroTier
+CMD ["/zerotier.d/start.sh"]

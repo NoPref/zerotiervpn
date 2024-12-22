@@ -1,23 +1,13 @@
 #!/bin/sh
 
-# Start the ZeroTier service
+# Start ZeroTier service
 zerotier-one &
+
+# Wait for ZeroTier to initialize
 sleep 5
 
-# Join the ZeroTier network
-zerotier-cli join ${ZEROTIER_NETWORK_ID}
+# Join your network
+zerotier-cli join 48d6023c46b63da5
 
-# Enable IP forwarding
-sysctl -w net.ipv4.ip_forward=1
-
-# Get interfaces
-ZT_IF=$(ip link show | grep zt | awk '{print $2}' | sed 's/://')
-WAN_IF=$(ip route | grep default | awk '{print $5}')
-
-# Configure NAT and forwarding
-iptables -t nat -A POSTROUTING -o $WAN_IF -j MASQUERADE
-iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-iptables -A FORWARD -i $ZT_IF -o $WAN_IF -j ACCEPT
-
-# Keep the container alive
-sleep infinity
+# Keep the container running
+tail -f /dev/null
