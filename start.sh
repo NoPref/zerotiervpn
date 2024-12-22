@@ -1,16 +1,10 @@
 #!/bin/sh
 
-# Check if /dev/net/tun exists
-if [ ! -c /dev/net/tun ]; then
-    echo "ERROR: /dev/net/tun is not available. Exiting..."
-    exit 1
+export PATH=/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin
+
+if [ ! -e /dev/net/tun ]; then
+	echo 'FATAL: cannot start ZeroTier One in container: /dev/net/tun not present.'
+	exit 1
 fi
 
-# Start ZeroTier
-zerotier-one -d
-
-# Join network
-zerotier-cli join ${NETWORK_ID}
-
-# Keep container alive
-tail -f /dev/null
+exec "$@"
