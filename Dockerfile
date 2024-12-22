@@ -10,7 +10,8 @@ ENV ZEROTIER_HOSTNAME "railway-app"
 ENV ZEROTIER_ADDITIONAL_ARGS ""
 
 RUN apk update && \
-    apk add --no-cache zerotier-one iptables ip6tables ca-certificates && \
+    apk add --no-cache iptables ip6tables ca-certificates curl && \
+    curl -s https://install.zerotier.com | sh && \
     rm -rf /var/cache/apk/*
 
 RUN mkdir -p /var/run/zerotier /var/lib/zerotier
