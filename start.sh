@@ -10,8 +10,7 @@ fi
 zerotier-one -d
 
 # Join network
-zerotier-cli join 48d6023c46b63da5
+zerotier-cli join ${NETWORK_ID}
 
 # Keep container alive
 tail -f /dev/null
-
