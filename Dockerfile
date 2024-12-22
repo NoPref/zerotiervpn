@@ -1,18 +1,15 @@
-# Use the official ZeroTier Docker image
 FROM zyclonite/zerotier
 
-# Create necessary directories
-RUN mkdir -p /var/run/zerotier /var/lib/zerotier
+# Install OpenVPN dependencies (may require root privileges)
+RUN apt-get update && apt-get install -y network-manager-openvpn iproute2 && apt-get clean
 
-# Set permissions
-RUN chmod +x /var/lib/zerotier
-
-# Add your start script
-COPY start.sh /zerotier.d/start.sh
-RUN chmod +x /zerotier.d/start.sh
-
-# Expose necessary ports (if required by your network setup)
-EXPOSE 9993/udp
+# Ensure the TUN module is loaded (this is a best-effort attempt)
+RUN mkdir -p /dev/net && \
+    [ -c /dev/net/tun ] || mknod /dev/net/tun c 10 200 && \
+    chmod 600 /dev/net/tun
 
 # Start ZeroTier
-CMD ["/zerotier.d/start.sh"]
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
+CMD ["/start.sh"]

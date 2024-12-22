@@ -1,18 +1,17 @@
 #!/bin/sh
 
-# Start ZeroTier service
+# Check if /dev/net/tun exists
+if [ ! -c /dev/net/tun ]; then
+    echo "ERROR: /dev/net/tun is not available. Exiting..."
+    exit 1
+fi
+
+# Start ZeroTier
 zerotier-one -d
 
-# Wait for ZeroTier to initialize
-sleep 5
-
-# Join the network
+# Join network
 zerotier-cli join 48d6023c46b63da5
 
-# Enable relay mode
-zerotier-cli set 48d6023c46b63da5 allowManaged=0
-zerotier-cli set 48d6023c46b63da5 allowGlobal=0
-zerotier-cli set 48d6023c46b63da5 allowDefault=0
-
-# Keep container running
+# Keep container alive
 tail -f /dev/null
+
